@@ -56,6 +56,8 @@ tr:last-child td { border-bottom: none; }
 .tag.full { background: var(--full); color: #fff; }
 .tag.none { background: rgba(255,255,255,0.08); color: var(--muted); }
 .date { text-align: left; font-weight: 600; }
+.slot-link { text-decoration: none; color: inherit; display: inline-block; }
+.slot-link:hover { opacity: 0.9; }
 @media (max-width: 720px) {
   th, td { padding: 9px 8px; font-size: 13px; }
   h1 { font-size: 18px; }
