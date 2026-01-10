@@ -30,8 +30,6 @@
 
   const renderTable = (grouped) => {
     const hours = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'];
-    const bookingUrl = (date, time) =>
-      `https://coubic.com/toshima-kidspark/923258/book?selected_date=${date}&selected_slot=${time}`;
     const rows = Object.keys(grouped)
       .sort()
       .map((iso) => {
@@ -42,8 +40,7 @@
           if (!slot) return '<td><span class="tag none">枠なし</span></td>';
           if (slot.vacancy === 0) return '<td><span class="tag full">満席</span></td>';
           const level = slot.vacancy <= 5 ? 'danger' : '';
-          const tag = `<span class="tag ${level}">残${slot.vacancy}</span>`;
-          return `<td><a class="slot-link" href="${bookingUrl(slot.date, slot.start_time)}" target="_blank" rel="noopener">${tag}</a></td>`;
+          return `<td><span class="tag ${level}">残${slot.vacancy}</span></td>`;
         });
         return `<tr><td class="date">${formatDateLabel(date)}</td>${cells.join('')}</tr>`;
       });
