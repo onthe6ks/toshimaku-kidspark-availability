@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const refreshBtn = document.getElementById('refresh');
   let lastFetchedMs = 0;
   const COOL_DOWN = 30 * 60 * 1000; // 30分
+  const API_URL = '/wp-json/onthe6ks/v1/kidspark/slots?days=15';
 
   const pad = (n) => String(n).padStart(2, '0');
 
@@ -60,26 +61,38 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = rows.join('');
   };
 
+  const formatApiDate = (s) => {
+    if (!s || s.length < 8) return '-';
+    return `${s.slice(0, 4)}/${pad(s.slice(4, 6))}/${pad(s.slice(6, 8))}`;
+  };
+
   const fetchSlots = async () => {
-    const { start, end } = buildRange();
-    rangeEl.textContent = `対象期間: ${start.getFullYear()}/${start.getMonth() + 1}/${start.getDate()} 〜 ${end.getFullYear()}/${end.getMonth() + 1}/${end.getDate()}（1時間枠・残り枠）`;
     fetchedEl.textContent = '｜ 取得時刻: -';
     renderStatus('取得中...');
 
-    const url = `https://coubic.com/api/v2/merchants/toshima-kidspark/booking_pages/923258/time_slots?start=${toApiDate(start)}&end=${toApiDate(end, true)}`;
     try {
-      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      const res = await fetch(API_URL, { headers: { 'Accept': 'application/json' } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
+
+      // range表示（APIから取得できたら優先）
+      if (json.range?.start && json.range?.end) {
+        rangeEl.textContent = `対象期間: ${formatApiDate(json.range.start)} 〜 ${formatApiDate(json.range.end)}（1時間枠・残り枠）`;
+      } else {
+        const { start, end } = buildRange();
+        rangeEl.textContent = `対象期間: ${start.getFullYear()}/${start.getMonth() + 1}/${start.getDate()} 〜 ${end.getFullYear()}/${end.getMonth() + 1}/${end.getDate()}（1時間枠・残り枠）`;
+      }
+
       const grouped = {};
       (json.data || []).forEach((s) => {
         if (!grouped[s.date]) grouped[s.date] = {};
         grouped[s.date][s.start_time] = s;
       });
       renderTable(grouped);
-      const now = new Date();
-      fetchedEl.textContent = `｜ 取得時刻: ${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-      lastFetchedMs = now.getTime();
+
+      const fetchedAt = json.fetched_at ? new Date(json.fetched_at) : new Date();
+      fetchedEl.textContent = `｜ 取得時刻: ${fetchedAt.getFullYear()}/${pad(fetchedAt.getMonth() + 1)}/${pad(fetchedAt.getDate())} ${pad(fetchedAt.getHours())}:${pad(fetchedAt.getMinutes())}`;
+      lastFetchedMs = fetchedAt.getTime();
       renderStatus('更新しました');
     } catch (err) {
       console.error(err);
