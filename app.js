@@ -1,8 +1,13 @@
-(() => {
+document.addEventListener('DOMContentLoaded', () => {
   const rangeEl = document.getElementById('range');
   const statusEl = document.getElementById('status');
+  const fetchedEl = document.getElementById('fetched-at');
   const tbody = document.getElementById('slots-body');
   const refreshBtn = document.getElementById('refresh');
+  let lastFetchedMs = 0;
+  const COOL_DOWN = 30 * 60 * 1000; // 30分
+
+  const pad = (n) => String(n).padStart(2, '0');
 
   const formatDateLabel = (d) => {
     const w = ['日','月','火','水','木','金','土'];
@@ -58,6 +63,7 @@
   const fetchSlots = async () => {
     const { start, end } = buildRange();
     rangeEl.textContent = `対象期間: ${start.getFullYear()}/${start.getMonth() + 1}/${start.getDate()} 〜 ${end.getFullYear()}/${end.getMonth() + 1}/${end.getDate()}（1時間枠・残り枠）`;
+    fetchedEl.textContent = '｜ 取得時刻: -';
     renderStatus('取得中...');
 
     const url = `https://coubic.com/api/v2/merchants/toshima-kidspark/booking_pages/923258/time_slots?start=${toApiDate(start)}&end=${toApiDate(end, true)}`;
@@ -71,6 +77,9 @@
         grouped[s.date][s.start_time] = s;
       });
       renderTable(grouped);
+      const now = new Date();
+      fetchedEl.textContent = `｜ 取得時刻: ${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      lastFetchedMs = now.getTime();
       renderStatus('更新しました');
     } catch (err) {
       console.error(err);
@@ -79,5 +88,16 @@
     }
   };
 
-  refreshBtn.addEventListener('click', fetchSlots);
-})();
+  refreshBtn.addEventListener('click', () => {
+    const now = Date.now();
+    if (lastFetchedMs && now - lastFetchedMs < COOL_DOWN) {
+      const remain = Math.ceil((COOL_DOWN - (now - lastFetchedMs)) / 60000);
+      renderStatus(`直近取得から30分は再取得を待ちます。あと${remain}分で再取得できます。`);
+      return;
+    }
+    fetchSlots();
+  });
+
+  // 初回ロード時に自動取得
+  fetchSlots();
+});
