@@ -15,19 +15,31 @@
       <span id="fetched-at" class="inline-meta">｜ 取得時刻: -</span>
     </p>
     <div class="actions">
-      <button id="refresh">直近2週間を更新</button>
+      <button id="refresh">情報を更新</button>
       <span id="status" class="muted">未取得</span>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>日付</th><th>10:00</th><th>11:00</th><th>12:00</th><th>13:00</th><th>14:00</th><th>15:00</th>
-        </tr>
-      </thead>
-      <tbody id="slots-body">
-        <tr><td class="date">-</td><td colspan="6" class="muted">「直近2週間を更新」を押してください。</td></tr>
-      </tbody>
-    </table>
+    <p class="meta notice-link"><a href="#notice">注意・使い方はこちら</a></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>日付</th><th>10:00</th><th>11:00</th><th>12:00</th><th>13:00</th><th>14:00</th><th>15:00</th>
+          </tr>
+        </thead>
+        <tbody id="slots-body">
+          <tr><td class="date">-</td><td colspan="6" class="muted">「情報を更新」を押してください。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <section id="notice" class="notice">
+      <h2>注意・使い方</h2>
+      <ul>
+        <li>非公式の空き状況表示ツールです。最新情報と予約は必ず公式サイトでご確認ください。</li>
+        <li>取得時刻から10分以内は更新できません。10分経過後に「情報を更新」を押してください。</li>
+        <li>利用によるトラブル・損害について、開発者は責任を負いません。自己責任でご利用ください。</li>
+        <li>公式サイト: <a href="https://coubic.com/toshima-kidspark" target="_blank" rel="noopener">https://coubic.com/toshima-kidspark</a></li>
+      </ul>
+    </section>
   </div>
 </div>
 <script src="app.js"></script>

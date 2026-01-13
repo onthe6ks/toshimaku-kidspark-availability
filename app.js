@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const tbody = document.getElementById('slots-body');
   const refreshBtn = document.getElementById('refresh');
   let lastFetchedMs = 0;
-  const COOL_DOWN = 30 * 60 * 1000; // 30分
-  const API_URL = '/wp-json/onthe6ks/v1/kidspark/slots?days=15';
+  const COOL_DOWN = 10 * 60 * 1000; // 10分
+  const MAX_DAYS = 15;
+  const API_URL = `/wp-json/onthe6ks/v1/kidspark/slots?days=${MAX_DAYS}`;
 
   const pad = (n) => String(n).padStart(2, '0');
 
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const buildRange = () => {
     const start = new Date();
     const end = new Date();
-    end.setDate(start.getDate() + 14); // 当日含め15日間
+    end.setDate(start.getDate() + (MAX_DAYS - 1)); // 当日含めMAX_DAYS日間
     return { start, end };
   };
 
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = Date.now();
     if (lastFetchedMs && now - lastFetchedMs < COOL_DOWN) {
       const remain = Math.ceil((COOL_DOWN - (now - lastFetchedMs)) / 60000);
-      renderStatus(`直近取得から30分は再取得を待ちます。あと${remain}分で再取得できます。`);
+      renderStatus(`直近取得から10分は再取得を待ちます。あと${remain}分で再取得できます。`);
       return;
     }
     fetchSlots();

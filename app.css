@@ -45,7 +45,8 @@
 #kidspark-app .actions button:active { transform: translateY(1px); }
 #kidspark-app .muted { color: var(--muted); font-size: 13px; }
 #kidspark-app .muted.error { color: var(--danger); }
-#kidspark-app table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+#kidspark-app .table-wrap { width: 100%; overflow-x: auto; padding-bottom: 8px; }
+#kidspark-app table { width: 100%; min-width: 600px; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
 #kidspark-app th, #kidspark-app td {
   padding: 10px 12px;
   text-align: center;
@@ -68,8 +69,32 @@
   display: block; width: 100%; height: 100%; padding: 4px 0;
 }
 #kidspark-app .slot-link:hover { opacity: 0.9; }
+#kidspark-app .notice-link { margin-top: 0; }
+#kidspark-app .notice-link a { color: var(--accent); text-decoration: none; font-weight: 700; }
+#kidspark-app .notice-link a:hover { text-decoration: underline; }
+#kidspark-app .notice {
+  margin: 18px 2px 0;
+  padding: 12px 14px;
+  background: rgba(86, 196, 210, 0.08);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+#kidspark-app .notice h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+#kidspark-app .notice ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 13px;
+}
+#kidspark-app .notice a { color: var(--accent); text-decoration: none; font-weight: 700; }
+#kidspark-app .notice a:hover { text-decoration: underline; }
 @media (max-width: 720px) {
   #kidspark-app { padding: 16px; }
   #kidspark-app h1 { font-size: 18px; }
   #kidspark-app th, #kidspark-app td { padding: 9px 8px; font-size: 13px; }
+  #kidspark-app table { min-width: 520px; }
 }
