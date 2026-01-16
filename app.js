@@ -2,12 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const rangeEl = document.getElementById('range');
   const statusEl = document.getElementById('status');
   const fetchedEl = document.getElementById('fetched-at');
-  const tbody = document.getElementById('slots-body');
   const refreshBtn = document.getElementById('refresh');
-  let lastFetchedMs = 0;
-  const COOL_DOWN = 10 * 60 * 1000; // 10分
+  const COOL_DOWN_MINUTES = 10;
+  const COOL_DOWN = COOL_DOWN_MINUTES * 60 * 1000;
   const MAX_DAYS = 15;
-  const API_URL = `/wp-json/onthe6ks/v1/kidspark/slots?days=${MAX_DAYS}`;
+  const HOURS = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'];
+  const BOOKING_PAGES = [
+    { id: 923258, label: '区民外', tbodyId: 'slots-body-out' },
+    { id: 625571, label: '区内（豊島区民）', tbodyId: 'slots-body-in' },
+  ];
+  const API_BASE = '/wp-json/onthe6ks/v1/kidspark/slots';
+  const tableBodies = new Map(
+    BOOKING_PAGES.map((p) => [p.id, document.getElementById(p.tbodyId)])
+  );
+  let lastFetchedMs = 0;
 
   const pad = (n) => String(n).padStart(2, '0');
 
@@ -23,43 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${y}${m}${day}${endOfDay ? '2359' : '0000'}`;
   };
 
-  const buildRange = () => {
-    const start = new Date();
-    const end = new Date();
-    end.setDate(start.getDate() + (MAX_DAYS - 1)); // 当日含めMAX_DAYS日間
-    return { start, end };
-  };
-
   const renderStatus = (text, isError = false) => {
     statusEl.textContent = text;
     statusEl.className = isError ? 'muted error' : 'muted';
-  };
-
-  const renderTable = (grouped) => {
-    const hours = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'];
-    const bookingUrl = (date, time) =>
-      `https://coubic.com/toshima-kidspark/923258/book?selected_date=${date}&selected_slot=${time}`;
-    const rows = Object.keys(grouped)
-      .sort()
-      .map((iso) => {
-        const slots = grouped[iso];
-        const date = new Date(iso);
-        const cells = hours.map((h) => {
-          const slot = slots[h];
-          if (!slot) return '<td><span class="tag none">枠なし</span></td>';
-          if (slot.vacancy === 0) return '<td><span class="tag full">満席</span></td>';
-          const level = slot.vacancy <= 5 ? 'danger' : '';
-          const tag = `<span class="tag ${level}">残${slot.vacancy}</span>`;
-          return `<td><a class="slot-link" href="${bookingUrl(slot.date, slot.start_time)}" target="_blank" rel="noopener">${tag}</a></td>`;
-        });
-        return `<tr><td class="date">${formatDateLabel(date)}</td>${cells.join('')}</tr>`;
-      });
-
-    if (!rows.length) {
-      tbody.innerHTML = '<tr><td class="date">-</td><td colspan="6" class="muted">取得できる枠がありませんでした。</td></tr>';
-      return;
-    }
-    tbody.innerHTML = rows.join('');
   };
 
   const formatApiDate = (s) => {
@@ -67,38 +41,119 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${s.slice(0, 4)}/${pad(s.slice(4, 6))}/${pad(s.slice(6, 8))}`;
   };
 
+  const parseDateString = (s) => {
+    if (!s || s.length < 8) return null;
+    return new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
+  };
+
+  const setPlaceholder = (pageId, text) => {
+    const target = tableBodies.get(pageId);
+    if (target) {
+      target.innerHTML = `<tr><td class="date">-</td><td colspan="6" class="muted">${text}</td></tr>`;
+    }
+  };
+
+  const groupSlots = (slots) => {
+    const grouped = {};
+    (slots || []).forEach((s) => {
+      if (!s?.date || !s?.start_time) return;
+      if (!grouped[s.date]) grouped[s.date] = {};
+      grouped[s.date][s.start_time] = s;
+    });
+    return grouped;
+  };
+
+  const renderTable = (pageId, grouped) => {
+    const target = tableBodies.get(pageId);
+    if (!target) return;
+
+    const bookingUrl = (date, time) =>
+      `https://coubic.com/toshima-kidspark/${pageId}/book?selected_date=${date}&selected_slot=${time}`;
+
+    const rows = Object.keys(grouped)
+      .sort()
+      .map((iso) => {
+        const slots = grouped[iso];
+        const parsed = parseDateString(iso);
+        const displayDate = parsed ? formatDateLabel(parsed) : iso;
+        const cells = HOURS.map((h) => {
+          const slot = slots[h];
+          if (!slot) return '<td><span class="tag none">枠なし</span></td>';
+          if (slot.vacancy === 0) return '<td><span class="tag full">満席</span></td>';
+          const level = slot.vacancy <= 5 ? 'danger' : '';
+          const tag = `<span class="tag ${level}">残${slot.vacancy}</span>`;
+          return `<td><a class="slot-link" href="${bookingUrl(slot.date, slot.start_time)}" target="_blank" rel="noopener">${tag}</a></td>`;
+        });
+        return `<tr><td class="date">${displayDate}</td>${cells.join('')}</tr>`;
+      });
+
+    if (!rows.length) {
+      target.innerHTML = '<tr><td class="date">-</td><td colspan="6" class="muted">取得できる枠がありませんでした。</td></tr>';
+      return;
+    }
+    target.innerHTML = rows.join('');
+  };
+
+  const buildApiUrl = (pageId) =>
+    `${API_BASE}?days=${MAX_DAYS}&booking_page=${pageId}`;
+
+  const fetchPage = async (pageId) => {
+    const res = await fetch(buildApiUrl(pageId), { headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`page ${pageId} HTTP ${res.status}`);
+    const json = await res.json();
+    return { pageId, json };
+  };
+
   const fetchSlots = async () => {
     fetchedEl.textContent = '｜ 取得時刻: -';
     renderStatus('取得中...');
+    BOOKING_PAGES.forEach((p) => setPlaceholder(p.id, '取得中...'));
 
-    try {
-      const res = await fetch(API_URL, { headers: { 'Accept': 'application/json' } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+    const results = await Promise.allSettled(BOOKING_PAGES.map((p) => fetchPage(p.id)));
+    let anySuccess = false;
+    let rangeText = '';
+    let latestFetchedMs = 0;
 
-      // range表示（APIから取得できたら優先）
-      if (json.range?.start && json.range?.end) {
-        rangeEl.textContent = `対象期間: ${formatApiDate(json.range.start)} 〜 ${formatApiDate(json.range.end)}（1時間枠・残り枠）`;
+    results.forEach((result, idx) => {
+      const { id } = BOOKING_PAGES[idx];
+      if (result.status === 'fulfilled') {
+        const { json } = result.value;
+        const grouped = groupSlots(json.data);
+        renderTable(id, grouped);
+        anySuccess = true;
+
+        if (!rangeText && json.range?.start && json.range?.end) {
+          rangeText = `対象期間: ${formatApiDate(json.range.start)} 〜 ${formatApiDate(json.range.end)}（1時間枠・残り枠）`;
+        }
+        if (json.fetched_at) {
+          const ts = new Date(json.fetched_at).getTime();
+          if (!Number.isNaN(ts)) {
+            latestFetchedMs = Math.max(latestFetchedMs, ts);
+          }
+        }
       } else {
-        const { start, end } = buildRange();
-        rangeEl.textContent = `対象期間: ${start.getFullYear()}/${start.getMonth() + 1}/${start.getDate()} 〜 ${end.getFullYear()}/${end.getMonth() + 1}/${end.getDate()}（1時間枠・残り枠）`;
+        console.error(result.reason);
+        setPlaceholder(id, '取得に失敗しました。時間をおいて再度お試しください。');
       }
+    });
 
-      const grouped = {};
-      (json.data || []).forEach((s) => {
-        if (!grouped[s.date]) grouped[s.date] = {};
-        grouped[s.date][s.start_time] = s;
-      });
-      renderTable(grouped);
+    if (anySuccess) {
+      if (!rangeText) {
+        const start = new Date();
+        const end = new Date();
+        end.setDate(start.getDate() + (MAX_DAYS - 1));
+        rangeText = `対象期間: ${start.getFullYear()}/${start.getMonth() + 1}/${start.getDate()} 〜 ${end.getFullYear()}/${end.getMonth() + 1}/${end.getDate()}（1時間枠・残り枠）`;
+      }
+      rangeEl.textContent = rangeText;
 
-      const fetchedAt = json.fetched_at ? new Date(json.fetched_at) : new Date();
+      const fetchedAt = latestFetchedMs ? new Date(latestFetchedMs) : new Date();
       fetchedEl.textContent = `｜ 取得時刻: ${fetchedAt.getFullYear()}/${pad(fetchedAt.getMonth() + 1)}/${pad(fetchedAt.getDate())} ${pad(fetchedAt.getHours())}:${pad(fetchedAt.getMinutes())}`;
       lastFetchedMs = fetchedAt.getTime();
-      renderStatus('更新しました');
-    } catch (err) {
-      console.error(err);
+      const isPartialError = results.some((r) => r.status === 'rejected');
+      renderStatus(isPartialError ? '一部の取得に失敗しました' : '更新しました', isPartialError);
+    } else {
       renderStatus('取得に失敗しました', true);
-      tbody.innerHTML = '<tr><td class="date">-</td><td colspan="6" class="muted">取得エラー</td></tr>';
+      fetchedEl.textContent = '｜ 取得時刻: -';
     }
   };
 
@@ -106,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = Date.now();
     if (lastFetchedMs && now - lastFetchedMs < COOL_DOWN) {
       const remain = Math.ceil((COOL_DOWN - (now - lastFetchedMs)) / 60000);
-      renderStatus(`直近取得から10分は再取得を待ちます。あと${remain}分で再取得できます。`);
+      renderStatus(`直近取得から${COOL_DOWN_MINUTES}分は再取得を待ちます。あと${remain}分で再取得できます。`);
       return;
     }
     fetchSlots();

@@ -45,6 +45,19 @@
 #kidspark-app .actions button:active { transform: translateY(1px); }
 #kidspark-app .muted { color: var(--muted); font-size: 13px; }
 #kidspark-app .muted.error { color: var(--danger); }
+#kidspark-app .table-section { margin: 14px 0 0; }
+#kidspark-app .section-header { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
+#kidspark-app .section-header h2 { margin: 0; font-size: 16px; letter-spacing: 0.2px; }
+#kidspark-app .pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(86, 196, 210, 0.16);
+  color: #0b1226;
+}
+#kidspark-app .pill.alt { background: rgba(246, 163, 194, 0.18); }
 #kidspark-app .table-wrap { width: 100%; overflow-x: auto; padding-bottom: 8px; }
 #kidspark-app table { width: 100%; min-width: 600px; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
 #kidspark-app th, #kidspark-app td {
@@ -97,4 +110,5 @@
   #kidspark-app h1 { font-size: 18px; }
   #kidspark-app th, #kidspark-app td { padding: 9px 8px; font-size: 13px; }
   #kidspark-app table { min-width: 520px; }
+  #kidspark-app .section-header { flex-wrap: wrap; gap: 6px; }
 }

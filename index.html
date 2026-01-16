@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>豊島キッズパーク 空き状況（区民外）</title>
+  <title>豊島キッズパーク 空き状況（区外・区内）</title>
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
 <div id="kidspark-app" class="kidspark-app">
   <div class="wrap">
-    <h1>豊島キッズパーク 空き状況（区民外）</h1>
+    <h1>豊島キッズパーク 空き状況（区外・区内）</h1>
     <p class="meta">
       <span id="range">対象期間: -</span>
       <span id="fetched-at" class="inline-meta">｜ 取得時刻: -</span>
@@ -19,18 +19,44 @@
       <span id="status" class="muted">未取得</span>
     </div>
     <p class="meta notice-link"><a href="#notice">注意・使い方はこちら</a></p>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>日付</th><th>10:00</th><th>11:00</th><th>12:00</th><th>13:00</th><th>14:00</th><th>15:00</th>
-          </tr>
-        </thead>
-        <tbody id="slots-body">
-          <tr><td class="date">-</td><td colspan="6" class="muted">「情報を更新」を押してください。</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <section class="table-section">
+      <div class="section-header">
+        <h2>区民外（一般）</h2>
+        <span class="pill">予約ページ 923258</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>日付</th><th>10:00</th><th>11:00</th><th>12:00</th><th>13:00</th><th>14:00</th><th>15:00</th>
+            </tr>
+          </thead>
+          <tbody id="slots-body-out">
+            <tr><td class="date">-</td><td colspan="6" class="muted">「情報を更新」を押してください。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="table-section">
+      <div class="section-header">
+        <h2>区内（豊島区民）</h2>
+        <span class="pill alt">予約ページ 625571</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>日付</th><th>10:00</th><th>11:00</th><th>12:00</th><th>13:00</th><th>14:00</th><th>15:00</th>
+            </tr>
+          </thead>
+          <tbody id="slots-body-in">
+            <tr><td class="date">-</td><td colspan="6" class="muted">「情報を更新」を押してください。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section id="notice" class="notice">
       <h2>注意・使い方</h2>
       <ul>
