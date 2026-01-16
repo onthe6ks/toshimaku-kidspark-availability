@@ -72,8 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const parseDateString = (s) => {
-    if (!s || s.length < 8) return null;
-    return new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
+    if (!s) return null;
+    // 2026-01-17 or 20260117 をどちらも許容
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+      const d = new Date(s);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+    if (s.length >= 8) {
+      const normalized = `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+      const d = new Date(normalized);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+    return null;
   };
 
   const setPlaceholder = (pageId, text) => {
