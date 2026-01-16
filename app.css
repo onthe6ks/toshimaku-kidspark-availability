@@ -29,9 +29,21 @@
   border: 1px solid var(--border);
   border-radius: 18px; padding: 20px 20px 12px;
   box-shadow: 0 14px 40px rgba(31, 41, 55, 0.1);
+  position: relative;
 }
 #kidspark-app h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: 0.5px; }
 #kidspark-app .meta { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+#kidspark-app .badge.unofficial {
+  position: absolute;
+  top: 14px; right: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
 #kidspark-app .actions {
   display: flex; align-items: center; gap: 10px;
   margin: 0 0 14px;
