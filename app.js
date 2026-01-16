@@ -41,6 +41,36 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${s.slice(0, 4)}/${pad(s.slice(4, 6))}/${pad(s.slice(6, 8))}`;
   };
 
+  const parseTimestamp = (value) => {
+    if (!value) return null;
+    const tryParse = (v) => {
+      const d = new Date(v);
+      return Number.isNaN(d.getTime()) ? null : d;
+    };
+
+    // 例: 2024-05-21T12:00:00+0900 形式のときに +09:00 を補う
+    if (typeof value === 'string' && value.match(/\+\d{4}$/)) {
+      const fixed = value.replace(/(\+\d{2})(\d{2})$/, '$1:$2');
+      const parsed = tryParse(fixed);
+      if (parsed) return parsed;
+    }
+    return tryParse(value);
+  };
+
+  const formatJst = (dateObj) => {
+    if (!dateObj) return '-';
+    const opts = {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
+    return dateObj.toLocaleString('ja-JP', opts).replace(/\//g, '/').replace(',', '');
+  };
+
   const parseDateString = (s) => {
     if (!s || s.length < 8) return null;
     return new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
@@ -146,9 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       rangeEl.textContent = rangeText;
 
-      const fetchedAt = latestFetchedMs ? new Date(latestFetchedMs) : new Date();
-      fetchedEl.textContent = `｜ 取得時刻: ${fetchedAt.getFullYear()}/${pad(fetchedAt.getMonth() + 1)}/${pad(fetchedAt.getDate())} ${pad(fetchedAt.getHours())}:${pad(fetchedAt.getMinutes())}`;
-      lastFetchedMs = fetchedAt.getTime();
+      const fetchedAt = latestFetchedMs ? new Date(latestFetchedMs) : null;
+      const fallback = fetchedAt || parseTimestamp(Date.now());
+      fetchedEl.textContent = `｜ 取得時刻: ${formatJst(fallback)}`;
+      lastFetchedMs = fallback ? fallback.getTime() : 0;
       const isPartialError = results.some((r) => r.status === 'rejected');
       renderStatus(isPartialError ? '一部の取得に失敗しました' : '更新しました', isPartialError);
     } else {
