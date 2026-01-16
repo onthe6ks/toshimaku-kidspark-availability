@@ -45,6 +45,31 @@
 #kidspark-app .actions button:active { transform: translateY(1px); }
 #kidspark-app .muted { color: var(--muted); font-size: 13px; }
 #kidspark-app .muted.error { color: var(--danger); }
+#kidspark-app .tab-buttons {
+  display: inline-flex;
+  gap: 8px;
+  margin: 8px 0 6px;
+  padding: 6px;
+  background: rgba(86, 196, 210, 0.12);
+  border-radius: 12px;
+}
+#kidspark-app .tab-button {
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+#kidspark-app .tab-button.active {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 6px 16px rgba(31, 41, 55, 0.08);
+}
+#kidspark-app .table-panel { display: none; }
+#kidspark-app .table-panel.is-active { display: block; }
 #kidspark-app .table-section { margin: 14px 0 0; }
 #kidspark-app .section-header { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
 #kidspark-app .section-header h2 { margin: 0; font-size: 16px; letter-spacing: 0.2px; }
@@ -111,4 +136,6 @@
   #kidspark-app th, #kidspark-app td { padding: 9px 8px; font-size: 13px; }
   #kidspark-app table { min-width: 520px; }
   #kidspark-app .section-header { flex-wrap: wrap; gap: 6px; }
+  #kidspark-app .tab-buttons { width: 100%; justify-content: space-between; }
+  #kidspark-app .tab-button { flex: 1; text-align: center; }
 }

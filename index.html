@@ -19,7 +19,12 @@
       <span id="status" class="muted">未取得</span>
     </div>
     <p class="meta notice-link"><a href="#notice">注意・使い方はこちら</a></p>
-    <section class="table-section">
+    <div class="tab-buttons" role="tablist">
+      <button class="tab-button active" data-target="panel-out" role="tab" aria-controls="panel-out" aria-selected="true">区民外（一般）</button>
+      <button class="tab-button" data-target="panel-in" role="tab" aria-controls="panel-in" aria-selected="false">区内（豊島区民）</button>
+    </div>
+
+    <section class="table-section table-panel is-active" id="panel-out" role="tabpanel" aria-label="区民外（一般）">
       <div class="section-header">
         <h2>区民外（一般）</h2>
         <span class="pill">予約ページ 923258</span>
@@ -38,7 +43,7 @@
       </div>
     </section>
 
-    <section class="table-section">
+    <section class="table-section table-panel" id="panel-in" role="tabpanel" aria-label="区内（豊島区民）" aria-hidden="true">
       <div class="section-header">
         <h2>区内（豊島区民）</h2>
         <span class="pill alt">予約ページ 625571</span>

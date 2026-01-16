@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const tableBodies = new Map(
     BOOKING_PAGES.map((p) => [p.id, document.getElementById(p.tbodyId)])
   );
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const panels = document.querySelectorAll('.table-panel');
+  let activeTab = 'panel-out';
   let lastFetchedMs = 0;
 
   const pad = (n) => String(n).padStart(2, '0');
@@ -207,6 +210,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fetchSlots();
   });
+
+  const setActiveTab = (targetId) => {
+    activeTab = targetId;
+    tabButtons.forEach((btn) => {
+      const isActive = btn.dataset.target === targetId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', String(isActive));
+      btn.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+    panels.forEach((panel) => {
+      const isActive = panel.id === targetId;
+      panel.classList.toggle('is-active', isActive);
+      panel.setAttribute('aria-hidden', String(!isActive));
+    });
+  };
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      setActiveTab(btn.dataset.target);
+    });
+  });
+
+  setActiveTab(activeTab);
 
   // 初回ロード時に自動取得
   fetchSlots();
