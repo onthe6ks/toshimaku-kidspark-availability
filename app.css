@@ -29,13 +29,13 @@
   border: 1px solid var(--border);
   border-radius: 18px; padding: 20px 20px 12px;
   box-shadow: 0 14px 40px rgba(31, 41, 55, 0.1);
-  position: relative;
+}
+#kidspark-app .header-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 }
 #kidspark-app h1 { margin: 0 0 4px; font-size: 22px; letter-spacing: 0.5px; }
 #kidspark-app .meta { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
 #kidspark-app .badge.unofficial {
-  position: absolute;
-  top: 14px; right: 14px;
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(239, 68, 68, 0.1);
@@ -95,15 +95,15 @@
   color: #0b1226;
 }
 #kidspark-app .pill.alt { background: rgba(246, 163, 194, 0.18); }
-#kidspark-app .table-wrap { width: 100%; overflow-x: auto; padding-bottom: 8px; }
-#kidspark-app table { width: 100%; min-width: 600px; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+#kidspark-app .table-wrap { width: 100%; overflow-x: auto; padding-bottom: 8px; position: relative; }
+#kidspark-app table { width: 100%; min-width: 600px; border-collapse: separate; border-spacing: 0; overflow: hidden; border-radius: 12px; }
 #kidspark-app th, #kidspark-app td {
   padding: 10px 12px;
   text-align: center;
   border-bottom: 1px solid var(--border);
   font-size: 14px;
 }
-#kidspark-app th { color: var(--muted); font-weight: 600; background: rgba(255,255,255,0.02); }
+#kidspark-app th { color: var(--muted); font-weight: 600; background: rgba(255,255,255,0.02); z-index: 1; }
 #kidspark-app tr:last-child td { border-bottom: none; }
 #kidspark-app .tag {
   display: inline-block; min-width: 52px; padding: 6px 10px;
@@ -153,9 +153,10 @@
   position: sticky;
   left: 0;
   background: var(--card);
-  z-index: 1;
+  z-index: 2;
   box-shadow: 6px 0 10px rgba(0,0,0,0.05);
 }
+#kidspark-app thead th:first-child { z-index: 3; }
 
 @media (max-width: 720px) {
   #kidspark-app { padding: 16px; }
@@ -165,9 +166,4 @@
   #kidspark-app .section-header { flex-wrap: wrap; gap: 6px; }
   #kidspark-app .tab-buttons { width: 100%; justify-content: space-between; }
   #kidspark-app .tab-button { flex: 1; text-align: center; }
-  #kidspark-app .badge.unofficial {
-    position: static;
-    display: inline-block;
-    margin-bottom: 8px;
-  }
 }
