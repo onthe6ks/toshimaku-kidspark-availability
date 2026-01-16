@@ -142,6 +142,21 @@
 }
 #kidspark-app .notice a { color: var(--accent); text-decoration: none; font-weight: 700; }
 #kidspark-app .notice a:hover { text-decoration: underline; }
+/* ヘッダー・日付の固定でスクロール時の視認性を確保 */
+#kidspark-app thead th {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 2;
+}
+#kidspark-app td.date, #kidspark-app th:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--card);
+  z-index: 1;
+  box-shadow: 6px 0 10px rgba(0,0,0,0.05);
+}
+
 @media (max-width: 720px) {
   #kidspark-app { padding: 16px; }
   #kidspark-app h1 { font-size: 18px; }
@@ -150,4 +165,9 @@
   #kidspark-app .section-header { flex-wrap: wrap; gap: 6px; }
   #kidspark-app .tab-buttons { width: 100%; justify-content: space-between; }
   #kidspark-app .tab-button { flex: 1; text-align: center; }
+  #kidspark-app .badge.unofficial {
+    position: static;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
 }
