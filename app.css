@@ -96,7 +96,7 @@
 }
 #kidspark-app .pill.alt { background: rgba(246, 163, 194, 0.18); }
 #kidspark-app .table-wrap { width: 100%; overflow-x: auto; padding-bottom: 8px; position: relative; }
-#kidspark-app table { width: 100%; min-width: 600px; border-collapse: separate; border-spacing: 0; overflow: hidden; border-radius: 12px; }
+#kidspark-app table { width: 100%; min-width: 600px; border-collapse: separate; border-spacing: 0; overflow: visible; border-radius: 12px; }
 #kidspark-app th, #kidspark-app td {
   padding: 10px 12px;
   text-align: center;
