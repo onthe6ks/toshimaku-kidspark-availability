@@ -164,10 +164,10 @@
 #kidspark-app thead th:first-child { z-index: 3; }
 
 @media (max-width: 720px) {
-  #kidspark-app { padding: 16px; }
+  #kidspark-app { padding: 10px; }
   #kidspark-app h1 { font-size: 18px; }
   #kidspark-app th, #kidspark-app td { padding: 9px 8px; font-size: 13px; }
-  #kidspark-app table { min-width: 520px; }
+  #kidspark-app table { min-width: 480px; }
   #kidspark-app .section-header { flex-wrap: wrap; gap: 6px; }
   #kidspark-app .tab-buttons { width: 100%; justify-content: space-between; }
   #kidspark-app .tab-button { flex: 1; text-align: center; }
