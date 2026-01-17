@@ -105,6 +105,11 @@
 }
 #kidspark-app th { color: var(--muted); font-weight: 600; background: rgba(255,255,255,0.02); z-index: 1; }
 #kidspark-app tr:last-child td { border-bottom: none; }
+#kidspark-app .repeat-header th {
+  background: rgba(86, 196, 210, 0.08);
+  font-weight: 700;
+  color: var(--text);
+}
 #kidspark-app .tag {
   display: inline-block; min-width: 52px; padding: 6px 10px;
   border-radius: 999px; font-weight: 600; font-size: 13px;

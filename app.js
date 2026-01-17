@@ -113,22 +113,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookingUrl = (date, time) =>
       `https://coubic.com/toshima-kidspark/${pageId}/book?selected_date=${date}&selected_slot=${time}`;
 
-    const rows = Object.keys(grouped)
-      .sort()
-      .map((iso) => {
-        const slots = grouped[iso];
-        const parsed = parseDateString(iso);
-        const displayDate = parsed ? formatDateLabel(parsed) : iso;
-        const cells = HOURS.map((h) => {
-          const slot = slots[h];
-          if (!slot) return '<td><span class="tag none">枠なし</span></td>';
-          if (slot.vacancy === 0) return '<td><span class="tag full">満席</span></td>';
-          const level = slot.vacancy <= 5 ? 'danger' : '';
-          const tag = `<span class="tag ${level}">残${slot.vacancy}</span>`;
-          return `<td><a class="slot-link" href="${bookingUrl(slot.date, slot.start_time)}" target="_blank" rel="noopener">${tag}</a></td>`;
-        });
-        return `<tr><td class="date">${displayDate}</td>${cells.join('')}</tr>`;
+    const buildRepeatHeaderRow = () => {
+      const heads = ['<th class="date">日付</th>', ...HOURS.map((h) => `<th>${h}</th>`)];
+      return `<tr class="repeat-header">${heads.join('')}</tr>`;
+    };
+
+    const rows = [];
+    const dates = Object.keys(grouped).sort();
+
+    dates.forEach((iso, idx) => {
+      const slots = grouped[iso];
+      const parsed = parseDateString(iso);
+      const displayDate = parsed ? formatDateLabel(parsed) : iso;
+      const cells = HOURS.map((h) => {
+        const slot = slots[h];
+        if (!slot) return '<td><span class="tag none">枠なし</span></td>';
+        if (slot.vacancy === 0) return '<td><span class="tag full">満席</span></td>';
+        const level = slot.vacancy <= 5 ? 'danger' : '';
+        const tag = `<span class="tag ${level}">残${slot.vacancy}</span>`;
+        return `<td><a class="slot-link" href="${bookingUrl(slot.date, slot.start_time)}" target="_blank" rel="noopener">${tag}</a></td>`;
       });
+      rows.push(`<tr><td class="date">${displayDate}</td>${cells.join('')}</tr>`);
+
+      // 2週間表示時に中間で見出しを繰り返す（7日ごと）
+      if ((idx + 1) % 7 === 0 && idx + 1 < dates.length) {
+        rows.push(buildRepeatHeaderRow());
+      }
+    });
 
     if (!rows.length) {
       target.innerHTML = '<tr><td class="date">-</td><td colspan="6" class="muted">取得できる枠がありませんでした。</td></tr>';
